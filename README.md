@@ -1,259 +1,215 @@
-# MongoDB MERN Stack - Week 1
+#  PLP Bookstore - MongoDB CRUD Operations
 
-A beginner-friendly MongoDB project demonstrating fundamental database operations using Mongoose ODM. This project covers essential CRUD operations, data modeling, and aggregation queries with Node.js and MongoDB.
+A MongoDB database project demonstrating basic CRUD (Create, Read, Update, Delete) operations for a bookstore management system.
 
-## 📋 Table of Contents
+##  Project Overview
 
-- [Overview](#overview)
-- [Features](#features)
-- [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Usage](#usage)
-- [Data Models](#data-models)
-- [Operations](#operations)
-- [Learning Objectives](#learning-objectives)
-- [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
-- [License](#license)
+This project implements a simple bookstore database using MongoDB, featuring book inventory management with comprehensive CRUD operations.
 
-## 🎯 Overview
+##  Features
 
-This project is part of the PLP MERN Stack Development program, Week 1 hands-on exercise. It demonstrates:
+- **Database**: `plp_bookstore`
+- **Collection**: `books`
+- **Operations**: Full CRUD functionality
+- **Sample Data**: 10+ book documents with detailed information
 
-- MongoDB connection using Mongoose
-- Schema definition and model creation
-- CRUD (Create, Read, Update, Delete) operations
-- Data seeding and population
-- Basic aggregation queries
-- Environment variable configuration
+##  Database Schema
 
-## ✨ Features
+Each book document contains the following fields:
 
-- **Database Connection**: Secure MongoDB Atlas connection
-- **User Management**: Create and manage user profiles
-- **Task Management**: Handle tasks with status tracking
-- **CRUD Operations**: Complete implementation of database operations
-- **Data Seeding**: Populate database with sample data
-- **Aggregation**: Group and analyze data using MongoDB aggregation pipeline
-- **Environment Configuration**: Secure credential management
+| Field | Type | Description |
+|-------|------|-------------|
+| `title` | String | Book title |
+| `author` | String | Author name |
+| `genre` | String | Book genre/category |
+| `published_year` | Number | Year of publication |
+| `price` | Number | Book price in USD |
+| `in_stock` | Boolean | Availability status |
+| `pages` | Number | Number of pages |
+| `publisher` | String | Publishing company |
 
-## 📁 Project Structure
+##  Getting Started
 
-```
-mongodb-mern-week-1/
-├── Models/
-│   ├── User.js          # User schema and model
-│   └── Task.js          # Task schema and model
-├── crud.js              # CRUD operations demonstration
-├── db.js                # Database connection configuration
-├── seed.js              # Data seeding script
-├── package.json         # Project dependencies and scripts
-├── .env.example         # Environment variables template
-└── README.md            # Project documentation
-```
+### Prerequisites
 
-## 📋 Prerequisites
+- MongoDB installed locally OR MongoDB Atlas account
+- MongoDB Shell (mongosh)
+- Git
 
-Before running this project, ensure you have:
-
-- **Node.js** (v14 or higher)
-- **npm** or **yarn** package manager
-- **MongoDB Atlas account** (or local MongoDB instance)
-- **Git** for version control
-
-## 🚀 Installation
+### Installation
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/PLP-MERN-Stack-Development/mongodb-mern-week-1.git
-   cd mongodb-mern-week-1
+   git clone <your-repository-url>
+   cd plp-bookstore
    ```
 
-2. **Install dependencies**
+2. **Start MongoDB** (if using local installation)
    ```bash
-   npm install
+   # macOS
+   brew services start mongodb-community
+   
+   # Linux
+   sudo systemctl start mongod
+   
+   # Windows
+   net start MongoDB
    ```
 
-3. **Set up environment variables**
+3. **Connect to MongoDB**
    ```bash
-   cp .env.example .env
+   mongosh
    ```
 
-## ⚙️ Configuration
+### Setup Database
 
-### Environment Setup
-
-1. **Create a `.env` file** in the root directory
-2. **Add your MongoDB connection string**:
-   ```env
-   MONGODBATLAS_URI=mongodb+srv://username:password@cluster.mongodb.net/database_name?retryWrites=true&w=majority
-   ```
-
-### MongoDB Atlas Setup
-
-1. **Create a MongoDB Atlas account** at [mongodb.com](https://www.mongodb.com/cloud/atlas)
-2. **Create a new cluster**
-3. **Create a database user** with read/write permissions
-4. **Whitelist your IP address**
-5. **Get your connection string** and add it to `.env`
-
-## 💡 Usage
-
-### Running the Application
-
-1. **Seed the database** with sample data:
+1. **Run the insert script** to populate the database:
    ```bash
-   node seed.js
+   mongosh < insert_books.js
+   ```
+   
+   Or within MongoDB shell:
+   ```javascript
+   load('insert_books.js')
    ```
 
-2. **Run CRUD operations**:
-   ```bash
-   node crud.js
+2. **Verify insertion**:
+   ```javascript
+   use plp_bookstore
+   db.books.countDocuments()
    ```
 
-### Available Scripts
+##  CRUD Operations
 
-- **Seed Database**: `node seed.js` - Populates database with sample users and tasks
-- **CRUD Operations**: `node crud.js` - Demonstrates all database operations
-
-## 🗂️ Data Models
-
-### User Model
-
+### Create
+Insert books into the collection:
 ```javascript
-{
-  name: String,           // User's full name
-  email: String,          // User's email (required, unique)
-  role: String,           // User role (default: "user")
-  timestamps: true        // createdAt, updatedAt
-}
+db.books.insertOne({
+  title: "Example Book",
+  author: "John Doe",
+  genre: "Fiction",
+  published_year: 2024,
+  price: 19.99,
+  in_stock: true,
+  pages: 350,
+  publisher: "Example Publisher"
+})
 ```
 
-### Task Model
+### Read
 
+**Find all books in a specific genre:**
 ```javascript
-{
-  title: String,          // Task title
-  status: String,         // Status: "todo", "in_progress", "done"
-  owner: String,          // Task owner name
-  timestamps: true        // createdAt, updatedAt
-}
+db.books.find({ genre: "Fantasy" })
 ```
 
-## 🔧 Operations
-
-### CRUD Operations Demonstrated
-
-1. **CREATE**
-   - Create new users with `User.create()`
-   - Bulk insert with `insertMany()`
-
-2. **READ**
-   - Find all users with `User.find()`
-   - Select specific fields with `.select()`
-
-3. **UPDATE**
-   - Update user role with `User.updateOne()`
-
-4. **DELETE**
-   - Delete user with `User.deleteOne()`
-   - Clear collections with `deleteMany()`
-
-5. **AGGREGATION**
-   - Group tasks by status
-   - Count documents in each group
-
-### Sample Operations
-
+**Find books published after a certain year:**
 ```javascript
-// Create a user
-const user = await User.create({
-  name: "John Doe",
-  email: "john@example.com"
-});
-
-// Find all users
-const users = await User.find().select("name email");
-
-// Update user role
-await User.updateOne(
-  { email: "john@example.com" },
-  { role: "admin" }
-);
-
-// Aggregate tasks by status
-const taskStats = await Task.aggregate([
-  { $group: { _id: "$status", total: { $sum: 1 } } }
-]);
+db.books.find({ published_year: { $gt: 1950 } })
 ```
 
-## 🎓 Learning Objectives
+**Find books by a specific author:**
+```javascript
+db.books.find({ author: "J.R.R. Tolkien" })
+```
 
-By completing this project, you will learn:
+### Update
 
-- ✅ How to connect Node.js to MongoDB using Mongoose
-- ✅ Creating and defining data schemas
-- ✅ Implementing CRUD operations
-- ✅ Using environment variables for configuration
-- ✅ Data seeding and population strategies
-- ✅ Basic MongoDB aggregation pipelines
-- ✅ Best practices for database operations
+**Update the price of a specific book:**
+```javascript
+db.books.updateOne(
+  { title: "1984" },
+  { $set: { price: 15.99 } }
+)
+```
 
-## 🛠️ Troubleshooting
+### Delete
 
-### Common Issues
+**Delete a book by its title:**
+```javascript
+db.books.deleteOne({ title: "Brave New World" })
+```
 
-1. **Connection Error**
-   - Check your MongoDB connection string
-   - Verify network access (IP whitelist)
-   - Ensure credentials are correct
+##  Running Query Examples
 
-2. **Module Not Found**
-   - Run `npm install` to install dependencies
-   - Check Node.js version compatibility
+Execute all CRUD operations at once:
+```bash
+mongosh < crud_queries.js
+```
 
-3. **Environment Variables**
-   - Ensure `.env` file exists and is properly formatted
-   - Check that `MONGODBATLAS_URI` is set
+Or run individual queries in MongoDB shell:
+```javascript
+use plp_bookstore
 
-### Debug Tips
+// View all books
+db.books.find().pretty()
 
-- Enable Mongoose debug mode: `mongoose.set('debug', true)`
-- Check database connection status before operations
-- Use try-catch blocks for error handling
+// Find books in stock
+db.books.find({ in_stock: true })
 
-## 🤝 Contributing
+// Find affordable books (under $15)
+db.books.find({ price: { $lt: 15 } })
 
-1. **Fork the repository**
-2. **Create a feature branch**: `git checkout -b feature/new-feature`
-3. **Make your changes** and commit: `git commit -am 'Add new feature'`
-4. **Push to the branch**: `git push origin feature/new-feature`
-5. **Submit a pull request**
+// Count total books
+db.books.countDocuments()
+```
 
-## 📄 License
+##  Project Structure
 
-This project is part of the PLP MERN Stack Development program and is for educational purposes.
+```
+plp-bookstore/
+│
+├── insert_books.js       # Script to insert sample books
+├── crud_queries.js       # All CRUD operation examples
+└── README.md            # Project documentation
+```
+
+##  Learning Outcomes
+
+This project demonstrates:
+- MongoDB database and collection creation
+- Document insertion (single and multiple)
+- Query operations with filters
+- Update operations
+- Delete operations
+- MongoDB query operators (`$gt`, `$lt`, `$set`, etc.)
+
+##  Technologies Used
+
+- **Database**: MongoDB
+- **Shell**: MongoDB Shell (mongosh)
+- **Language**: JavaScript (MongoDB queries)
+
+## Sample Data
+
+The database includes 10 books spanning multiple genres:
+- Fiction (The Great Gatsby, To Kill a Mockingbird)
+- Fantasy (Harry Potter, The Hobbit, The Lord of the Rings)
+- Dystopian (1984, Brave New World)
+- Romance (Pride and Prejudice)
+- Thriller (The Da Vinci Code)
+
+##  Contributing
+
+Feel free to fork this project and submit pull requests for any improvements.
+
+##  License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+##  Author
+
+**Your Name**
+- GitHub: [@DevKimani](https://github.com/yourusername)
+
+## Acknowledgments
+
+- PLP Academy for the project requirements
+- MongoDB documentation and community
 
 ---
 
-## 📚 Additional Resources
+⭐ **Star this repository** if you found it helpful!
 
-- [MongoDB Official Documentation](https://docs.mongodb.com/)
-- [Mongoose ODM Documentation](https://mongoosejs.com/docs/)
-- [Node.js Documentation](https://nodejs.org/docs/)
-- [PLP MERN Stack Program](https://plp.com/)
 
-## 📞 Support
 
-For questions or issues:
-- Create an issue in this repository
-- Contact your PLP instructor
-- Join the PLP community discussions
-
----
-
-**Happy Coding! 🚀**
-
-*Built with ❤️ by PLP MERN Stack Development - July Cohort*
